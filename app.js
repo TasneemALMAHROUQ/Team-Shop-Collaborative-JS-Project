@@ -1,60 +1,125 @@
-const STORAGE_KEY = 'team-shop-items-v1';
+// Team Shop — Collaborative JS Project
+// Student A + Student C
 
+// ---------- Load from localStorage if exists (Student C) ----------
+const saved = JSON.parse(localStorage.getItem('items') || '[]');
+const items = saved.length ? saved : [
+  { name: 'Apple', type: 'fruit', qty: 3, done: false },
+  { name: 'Banana', type: 'fruit', qty: 5, done: false },
+  { name: 'Carrot', type: 'veg',   qty: 2, done: false },
+  { name: 'Bread',  type: 'other', qty: 1, done: false },
+];
 
-function updateStats(){
-const out = $('#stats-output');
-const totals = state.items.reduce((acc,it)=>{
-acc[it.category] = (acc[it.category]||0) + Number(it.quantity);
-return acc;
-},{});
-if(Object.keys(totals).length === 0){ out.innerHTML = '<small class="muted">No stats yet</small>'; return; }
-out.innerHTML = Object.entries(totals).map(([cat,num])=>`<div><strong>${cat}</strong>: ${num}</div>`).join('');
-}
-
-
-function addItem(data){ const item = { id: generateId(), name: data.name.trim(), category: data.category, quantity: Number(data.quantity), price: data.price ? Number(data.price) : 0, done: false }; state.items.unshift(item); saveItems(); renderList(); }
-function toggleDone(id){ const idx = state.items.findIndex(i=>i.id===id); if(idx>-1){ state.items[idx].done = !state.items[idx].done; saveItems(); renderList(); } }
-function removeItem(id){ const idx = state.items.findIndex(i=>i.id===id); if(idx>-1){ state.items.splice(idx,1); saveItems(); renderList(); } }
-
-
-function init(){
-loadItems(); renderList();
-const form = $('#item-form');
-const search = $('#search-input');
-const pills = $('#filter-pills');
-const list = $('#item-list');
-const errorsBox = $('#form-errors');
-
-
-form.addEventListener('submit', e => {
-e.preventDefault();
-errorsBox.textContent = '';
-const formData = new FormData(form);
-const data = {
-name: formData.get('name'),
-category: formData.get('category'),
-quantity: formData.get('quantity'),
-price: (formData.get('price')||'').trim()
+// ---------- DOM references ----------
+const listEl   = document.getElementById('list');
+const stats = {
+  total:  document.getElementById('totalCount'),
+  fruit:  document.getElementById('fruitCount'),
+  veg:    document.getElementById('vegCount'),
+  other:  document.getElementById('otherCount')
 };
-const errs = validateItem(data);
-if(errs.length){ errorsBox.innerHTML = errs.map(x=>`<div>• ${x}</div>`).join(''); return; }
-addItem(data);
-form.reset();
-form.querySelector('[name=quantity]').value = 1;
-form.querySelector('[name=name]').focus();
-});
+const form = document.getElementById('addItemForm');
+const nameInput = document.getElementById('itemName');
+const typeInput = document.getElementById('itemType');
+const qtyInput  = document.getElementById('itemQty');
+const errorBox  = document.getElementById('formError');
+const pills     = document.querySelectorAll('.pill');
+const searchBox = document.getElementById('searchBox');
 
+let currentFilter = localStorage.getItem('lastFilter') || 'all';
+let searchQuery = '';
 
-list.addEventListener('click', e => {
-const li = e.target.closest('.item'); if(!li) return; const id = li.dataset.id;
-if(e.target.classList.contains('toggle')){ toggleDone(id); }
-if(e.target.classList.contains('remove')){ if(confirm('Remove this item?')) removeItem(id); }
-});
-
-
-pills.addEventListener('click', e => { const btn = e.target.closest('.pill'); if(!btn) return; pills.querySelectorAll('.pill').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); state.filter = btn.dataset.cat; renderList(); });
-search.addEventListener('input', e => { state.search = e.target.value; renderList(); });
+// ---------- Utility: validation ----------
+function validateItem(name, qty){
+  const nameOk = /^[A-Za-z0-9 ]{3,30}$/.test(name);
+  const qtyOk  = Number.isInteger(Number(qty)) && Number(qty) >= 1;
+  if(!nameOk && !qtyOk){
+    return 'Name must be 3–30 letters/numbers/spaces, quantity must be ≥ 1.';
+  } else if(!nameOk){
+    return 'Invalid name. Use 3–30 letters/numbers/spaces.';
+  } else if(!qtyOk){
+    return 'Invalid quantity. Use a number ≥ 1.';
+  }
+  return '';
 }
 
+// ---------- Render ----------
+function render(){
+  listEl.innerHTML = '';
 
-document.addEventListener('DOMContentLoaded', init);
+  const visible = items.filter(it => {
+    const matchesType = (currentFilter === 'all') || (it.type === currentFilter);
+    const matchesText = it.name.toLowerCase().includes(searchQuery);
+    return matchesType && matchesText;
+  });
+
+  visible.forEach((item) => {
+    const li = document.createElement('li');
+    li.textContent = `${item.name} (${item.type}) — x${item.qty}`;
+    li.dataset.name = item.name;
+
+    if(item.done) li.classList.add('complete');
+
+    const rm = document.createElement('button');
+    rm.textContent = 'Remove';
+    rm.className = 'pill';
+    rm.style.marginLeft = '8px';
+    rm.dataset.action = 'remove';
+    rm.dataset.name = item.name;
+    li.appendChild(rm);
+
+    listEl.appendChild(li);
+  });
+
+  updateStats();
+
+  // Update pills active state (Student C)
+  pills.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === currentFilter);
+  });
+
+  // Save items and last filter to localStorage (Student C)
+  localStorage.setItem('items', JSON.stringify(items));
+  localStorage.setItem('lastFilter', currentFilter);
+}
+
+// ---------- Stats ----------
+function updateStats(){
+  stats.total.textContent = `Total: ${items.length}`;
+  const counts = items.reduce((acc, it) => {
+    acc[it.type] = (acc[it.type] || 0) + 1;
+    return acc;
+  }, {});
+  stats.fruit.textContent = `Fruit: ${counts.fruit || 0}`;
+  stats.veg.textContent   = `Veg: ${counts.veg || 0}`;
+  stats.other.textContent = `Other: ${counts.other || 0}`;
+}
+
+// ---------- Events ----------
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = nameInput.value.trim();
+  const type = typeInput.value;
+  const qty  = qtyInput.value.trim();
+
+  // Prevent duplicates (case-insensitive)
+  const dup = items.find(it => it.name.toLowerCase() === name.toLowerCase());
+  if(dup){
+    errorBox.textContent = 'Duplicate item name. Choose a different name.';
+    return;
+  }
+
+  const err = validateItem(name, qty);
+  if(err){
+    errorBox.textContent = err;
+    return;
+  }
+  errorBox.textContent = '';
+
+  items.push({ name, type, qty: Number(qty), done: false });
+  form.reset();
+  nameInput.focus();
+  render();
+});
+
+//
