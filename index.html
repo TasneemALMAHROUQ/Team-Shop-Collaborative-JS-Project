@@ -1,73 +1,69 @@
 <!doctype html>
-<div class="field">
-<label for="item-name">Item name</label>
-<input id="item-name" name="name" type="text" required placeholder="Enter item name" />
-</div>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Team Shop — Collaborative JS Project</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Team Shop</h1>
+    <!-- Student A: Add tagline under the title -->
+    <p class="tagline">Organize your shopping items easily and quickly.</p>
 
+    <nav class="stats">
+      <span id="totalCount">Total: 0</span>
+      <span id="fruitCount">Fruit: 0</span>
+      <span id="vegCount">Veg: 0</span>
+      <span id="otherCount">Other: 0</span>
+    </nav>
+  </header>
 
-<div class="field">
-<label for="item-category">Category</label>
-<select id="item-category" name="category" required>
-<option value="">— choose —</option>
-<option value="groceries">Groceries</option>
-<option value="electronics">Electronics</option>
-<option value="clothing">Clothing</option>
-<option value="other">Other</option>
-</select>
-</div>
+  <main class="container">
+    <!-- B: Add Item Form -->
+    <section class="card">
+      <h2>Add Item</h2>
+      <form name="addItem" id="addItemForm" novalidate>
+        <input type="text" name="itemName" id="itemName" placeholder="Item name (e.g., Apple)" required pattern="^[A-Za-z0-9 ]{3,30}$">
+        <select name="itemType" id="itemType">
+          <option value="fruit">Fruit</option>
+          <option value="veg">Veg</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="number" name="itemQty" id="itemQty" placeholder="Qty" min="1" value="1">
+        <button type="submit">Add</button>
+        <small class="help">3–30 letters/numbers/spaces. Quantity ≥ 1.</small>
+        <p id="formError" class="error" aria-live="polite"></p>
+      </form>
+    </section>
 
+    <!-- C: Filters/Search (Student C) -->
+    <section class="card filters">
+      <h2>Filter & Search</h2>
+      <div class="row">
+        <button data-filter="all" class="pill">All</button>
+        <button data-filter="fruit" class="pill">Fruit</button>
+        <button data-filter="veg" class="pill">Veg</button>
+        <button data-filter="other" class="pill">Other</button>
+      </div>
+      <div class="row">
+        <input type="search" id="searchBox" placeholder="Search by name…">
+      </div>
+    </section>
 
-<div class="field small">
-<label for="item-qty">Quantity</label>
-<input id="item-qty" name="quantity" type="number" min="1" value="1" required />
-</div>
+    <!-- Items List -->
+    <section class="card">
+      <h2>Items</h2>
+      <ul id="list" class="list"></ul>
+      <p class="hint">Tip: click an item to toggle <strong>done</strong>.</p>
+    </section>
+  </main>
 
+  <footer class="site-footer">
+    <small>Team Shop — Vanilla JS (Student A + Student C)</small>
+  </footer>
 
-<div class="field small">
-<label for="item-price">Price (optional)</label>
-<input id="item-price" name="price" type="text" inputmode="decimal" placeholder="e.g. 4.50" pattern="^\d+(\.\d{1,2})?$" />
-</div>
-
-
-<div class="actions">
-<button type="submit">Add item</button>
-<button type="reset">Clear</button>
-</div>
-
-
-<div id="form-errors" class="errors" aria-live="polite"></div>
-</form>
-</section>
-
-
-<section class="controls">
-<div class="search">
-<input id="search-input" placeholder="Search by name..." />
-</div>
-
-
-<div id="filter-pills" class="pills">
-<button class="pill active" data-cat="all">All</button>
-<button class="pill" data-cat="groceries">Groceries</button>
-<button class="pill" data-cat="electronics">Electronics</button>
-<button class="pill" data-cat="clothing">Clothing</button>
-<button class="pill" data-cat="other">Other</button>
-</div>
-</section>
-
-
-<section class="list-section">
-<ul id="item-list" class="items" aria-live="polite"></ul>
-</section>
-
-
-<section class="stats">
-<h3>Stats</h3>
-<div id="stats-output"></div>
-</section>
-</main>
-
-
-<script src="app.js" defer></script>
+  <script src="app.js"></script>
 </body>
 </html>
