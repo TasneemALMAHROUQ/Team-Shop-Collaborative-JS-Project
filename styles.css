@@ -1,0 +1,113 @@
+:root{
+  --brand: #2563eb;  /* Student A: can change for merge conflicts */
+  --card: #ffffff;
+  --text: #1b1b1b;
+  --muted: #5b5b5b;
+  --danger: #dc2626;
+}
+
+*{ box-sizing: border-box; }
+
+body{
+  font-family: system-ui, Arial, sans-serif;
+  margin: 0;
+  background: #f5f7fb;
+  color: var(--text);
+}
+
+.container{ max-width: 880px; margin: 24px auto; padding: 0 16px; }
+
+/* Student A: header layout and tagline */
+.site-header{
+  background: var(--brand);
+  color: white;
+  padding: 16px;
+  text-align: center; /* center header content */
+}
+
+.site-header h1{ margin: 0; }
+
+.site-header .tagline {
+  font-size: 1rem;
+  color: #e0e0e0;
+  margin: 4px 0 0 0;
+}
+
+.stats{
+  display: flex; 
+  gap: 12px; 
+  margin-top: 4px; 
+  font-size: 14px; 
+  justify-content: center;
+}
+
+/* Cards */
+.card{
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,.06);
+}
+
+.row{ display: flex; gap: 8px; flex-wrap: wrap; }
+
+input[type="text"], input[type="number"], input[type="search"], select{
+  padding: 10px 12px; 
+  border: 1px solid #ddd; 
+  border-radius: 8px;
+}
+
+button{
+  padding: 10px 14px; 
+  border: none; 
+  border-radius: 10px; 
+  background: var(--brand); 
+  color: white; 
+  cursor: pointer;
+}
+
+button:hover{ opacity: .95 }
+
+/* Student A: pill buttons style + highlight active pill */
+.pill{ 
+  background: #e8efff; 
+  color: #1e3a8a; 
+  border: 1px solid #cfe0ff; 
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+.pill.active{ 
+  background: var(--brand); 
+  color: white; 
+  border-color: var(--brand); 
+  font-weight: bold;
+}
+
+/* Student A: improve list readability and spacing */
+.list{
+  padding: 0;
+  list-style: none;
+}
+
+.list li{
+  margin: 8px 0;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+}
+
+.list li.complete{
+  text-decoration: line-through;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.error{ color: var(--danger); min-height: 1.2em; }
+.hint{ color: var(--muted); font-size: 13px; }
+.site-footer{ text-align: center; padding: 24px; color: var(--muted); }
